@@ -1,4 +1,8 @@
+﻿using Arm.Shop.Core.Services;
+using Arm.Shop.Data.Models;
+using Arm.Shop.Data.Services;
 using Arm.Shop.Web.Components;
+using Microsoft.EntityFrameworkCore;
 
 namespace Arm.Shop
 {
@@ -8,22 +12,27 @@ namespace Arm.Shop
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-            builder.Services.AddRazorComponents()
+            // 🔗 Registrar DbContext con la cadena de conexión desde appsettings.json
+            builder.Services.AddDbContext<ArmShopDbContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            builder.Services.AddScoped<IProductoService, ProductoService>();
+
+            // Agregar servicios de Blazor Server
+            builder.Services
+                .AddRazorComponents()
                 .AddInteractiveServerComponents();
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
+            // Configuración del pipeline HTTP
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
             app.UseHttpsRedirection();
-
             app.UseStaticFiles();
             app.UseAntiforgery();
 

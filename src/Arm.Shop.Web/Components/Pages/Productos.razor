@@ -1,0 +1,42 @@
+﻿@page "/productos"
+@inject Arm.Shop.Core.Services.IProductoService ProductoService
+
+<h3>Productos</h3>
+
+@if (productos == null)
+{
+    <p><em>Cargando...</em></p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Precio base</th>
+                <th>Stock total</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var p in productos)
+            {
+                <tr>
+                    <td>@p.Nombre</td>
+                    <td>@p.Descripcion</td>
+                    <td>@p.Precio?.ToString("C")</td>
+                    <td>@p.Stock</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Arm.Shop.Core.DTOs.ProductoDto>? productos;
+
+    protected override async Task OnInitializedAsync()
+    {
+        productos = await ProductoService.GetProductosAsync();
+    }
+}

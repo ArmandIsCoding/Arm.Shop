@@ -1,3 +1,6 @@
+-- Recordar usar: dotnet ef dbcontext scaffold "Server=LOCALHOST\SQLEXPRESS;Database=ArmShopDb;User Id=XX;Password=XXXXXX;TrustServerCertificate=True;" Microsoft.EntityFrameworkCore.SqlServer -o Models -f --context ArmShopDbContext --project Arm.Shop.Data --startup-project Arm.Shop.Web
+-- en SQL Server (cambiar por credenciales válidas)
+
 -- Crear la base de datos si no existe
 IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = 'ArmShopDb')
 BEGIN
