@@ -15,6 +15,7 @@ public partial class ArmShopDbContext : DbContext
     {
     }
 
+    public virtual DbSet<EmpresaMetadata> EmpresaMetadata { get; set; }
     public virtual DbSet<Atributo> Atributos { get; set; }
 
     public virtual DbSet<AtributoValore> AtributoValores { get; set; }

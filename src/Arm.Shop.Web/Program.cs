@@ -16,6 +16,9 @@ namespace Arm.Shop
             builder.Services.AddDbContext<ArmShopDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+            builder.Services.AddMemoryCache();
+            builder.Services.AddScoped<IEmpresaService, EmpresaService>();
+
             builder.Services.AddScoped<IProductoService, ProductoService>();
 
             // Agregar servicios de Blazor Server

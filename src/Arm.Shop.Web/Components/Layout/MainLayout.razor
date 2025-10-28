@@ -1,23 +1,27 @@
 ﻿@inherits LayoutComponentBase
+@inject Arm.Shop.Core.Services.IEmpresaService EmpresaService
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+@* ESTA ES LA LÍNEA QUE DEBES AGREGAR *@
+<PageTitle>@pageTitle</PageTitle>
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
+<NavMenu />
 
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
+<main>
+    @Body
+</main>
 
-<div id="blazor-error-ui">
-    An unhandled error has occurred.
-    <a href="" class="reload">Reload</a>
-    <a class="dismiss">🗙</a>
-</div>
+<Footer Empresa="empresa" />
+
+@code {
+    private string pageTitle = "Arm.Shop"; // Título por defecto
+    private Arm.Shop.Core.DTOs.EmpresaMetadataDto? empresa;
+
+    protected override async Task OnInitializedAsync()
+    {
+        empresa = await EmpresaService.GetMetadataAsync();
+        if (empresa != null && !string.IsNullOrEmpty(empresa.Nombre))
+        {
+            pageTitle = empresa.Nombre;
+        }
+    }
+}

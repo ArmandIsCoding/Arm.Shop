@@ -1,0 +1,119 @@
+﻿@inject Arm.Shop.Core.Services.IEmpresaService EmpresaService
+
+<footer class="bg-dark" id="tempaltemo_footer">
+    <div class="container">
+        <div class="row">
+
+            <!-- Columna con datos de la empresa -->
+            <div class="col-md-6 pt-5">
+                @if (empresa != null)
+                {
+                    <h2 class="h2 text-success border-bottom pb-3 border-light logo">@empresa.Nombre</h2>
+                    <ul class="list-unstyled text-light footer-link-list">
+                        @if (!string.IsNullOrEmpty(empresa.Direccion))
+                        {
+                            <li>
+                                <i class="fas fa-map-marker-alt fa-fw"></i>
+                                @empresa.Direccion
+                            </li>
+                        }
+                        @if (!string.IsNullOrEmpty(empresa.Telefono))
+                        {
+                            <li>
+                                <i class="fa fa-phone fa-fw"></i>
+                                <a class="text-decoration-none" href="tel:@empresa.Telefono">@empresa.Telefono</a>
+                            </li>
+                        }
+                        @if (!string.IsNullOrEmpty(empresa.Email))
+                        {
+                            <li>
+                                <i class="fa fa-envelope fa-fw"></i>
+                                <a class="text-decoration-none" href="mailto:@empresa.Email">@empresa.Email</a>
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p class="text-light">Cargando datos de la empresa...</p>
+                }
+            </div>
+
+            <!-- Columna con enlaces adicionales -->
+            <div class="col-md-6 pt-5">
+                <h2 class="h2 text-light border-bottom pb-3 border-light">Más información</h2>
+                <ul class="list-unstyled text-light footer-link-list">
+                    <li><a class="text-decoration-none" href="/">Home</a></li>
+                    <li><a class="text-decoration-none" href="/nosotros">Nosotros</a></li>
+                    <li><a class="text-decoration-none" href="/contacto">Contacto</a></li>
+                </ul>
+            </div>
+
+        </div>
+
+        <div class="row text-light mb-4">
+            <div class="col-12 mb-3">
+                <div class="w-100 my-3 border-top border-light"></div>
+            </div>
+            <div class="col-auto me-auto">
+                <ul class="list-inline text-left footer-icons">
+                    @if (!string.IsNullOrEmpty(empresa?.FacebookUrl))
+                    {
+                        <li class="list-inline-item border border-light rounded-circle text-center">
+                            <a class="text-light text-decoration-none" target="_blank" href="@empresa.FacebookUrl">
+                                <i class="fab fa-facebook-f fa-lg fa-fw"></i>
+                            </a>
+                        </li>
+                    }
+                    @if (!string.IsNullOrEmpty(empresa?.InstagramUrl))
+                    {
+                        <li class="list-inline-item border border-light rounded-circle text-center">
+                            <a class="text-light text-decoration-none" target="_blank" href="@empresa.InstagramUrl">
+                                <i class="fab fa-instagram fa-lg fa-fw"></i>
+                            </a>
+                        </li>
+                    }
+                    @if (!string.IsNullOrEmpty(empresa?.TwitterUrl))
+                    {
+                        <li class="list-inline-item border border-light rounded-circle text-center">
+                            <a class="text-light text-decoration-none" target="_blank" href="@empresa.TwitterUrl">
+                                <i class="fab fa-twitter fa-lg fa-fw"></i>
+                            </a>
+                        </li>
+                    }
+                    @if (!string.IsNullOrEmpty(empresa?.LinkedinUrl))
+                    {
+                        <li class="list-inline-item border border-light rounded-circle text-center">
+                            <a class="text-light text-decoration-none" target="_blank" href="@empresa.LinkedinUrl">
+                                <i class="fab fa-linkedin fa-lg fa-fw"></i>
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </div>
+            <div class="col-auto">
+                <label class="sr-only" for="subscribeEmail">Email</label>
+                <div class="input-group mb-2">
+                    <input type="text" class="form-control bg-dark border-light" id="subscribeEmail" placeholder="Email">
+                    <div class="input-group-text btn-success text-light">Suscribirme</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="w-100 bg-black py-3">
+        <div class="container">
+            <div class="row pt-2">
+                <div class="col-12">
+                    <p class="text-left text-light">
+                        &copy; @DateTime.Now.Year @empresa?.Nombre
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+@code {
+    [Parameter] public Arm.Shop.Core.DTOs.EmpresaMetadataDto? empresa { get; set; }
+}
