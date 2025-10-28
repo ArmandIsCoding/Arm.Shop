@@ -14,6 +14,7 @@ else
             <tr>
                 <th>Nombre</th>
                 <th>Descripción</th>
+                <th>Categoría</th>
                 <th>Precio base</th>
                 <th>Stock total</th>
             </tr>
@@ -24,8 +25,9 @@ else
                 <tr>
                     <td>@p.Nombre</td>
                     <td>@p.Descripcion</td>
-                    <td>@p.Precio?.ToString("C")</td>
-                    <td>@p.Stock</td>
+                    <td>@p.CategoriaRuta</td>
+                    <td>@(p.Precio.HasValue? p.Precio.Value.ToString("C", new System.Globalization.CultureInfo("es-AR")) : "-")</td>
+                    <td>@(p.Stock ?? 0)</td>
                 </tr>
             }
         </tbody>

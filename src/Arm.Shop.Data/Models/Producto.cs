@@ -14,4 +14,8 @@ public partial class Producto
     public DateTime FechaAlta { get; set; }
 
     public virtual ICollection<ProductoVariacione> ProductoVariaciones { get; set; } = new List<ProductoVariacione>();
+
+    public int CategoriaId { get; set; }
+
+    public Categoria Categoria { get; set; } = null!;
 }

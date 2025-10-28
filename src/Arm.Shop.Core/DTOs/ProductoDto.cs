@@ -15,5 +15,9 @@
 
         // Se puede incluir una lista de variaciones para mostrar talles/colores/etc
         public List<ProductoVariacionDto> Variaciones { get; set; } = [];
+
+        // Nueva propiedad
+        public string CategoriaRuta { get; set; } = string.Empty;
+
     }
 }

@@ -31,6 +31,8 @@ public partial class ArmShopDbContext : DbContext
 
     public virtual DbSet<Usuario> Usuarios { get; set; }
 
+    public DbSet<Categoria> Categorias { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         // Intencionalmente vacío: la configuración se hace en Program.cs
@@ -167,6 +169,24 @@ public partial class ArmShopDbContext : DbContext
             entity.Property(e => e.PasswordHash).HasMaxLength(200);
         });
 
+        // Configuraciones explícitas
+        modelBuilder.Entity<Producto>(entity =>
+        {
+            entity.HasOne(p => p.Categoria)
+                  .WithMany(c => c.Productos)
+                  .HasForeignKey(p => p.CategoriaId)
+                  .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<Categoria>(entity =>
+        {
+            entity.HasOne(c => c.CategoriaPadre)
+                  .WithMany(c => c.Subcategorias)
+                  .HasForeignKey(c => c.CategoriaPadreId)
+                  .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        // Llamada al método parcial
         OnModelCreatingPartial(modelBuilder);
     }
 
