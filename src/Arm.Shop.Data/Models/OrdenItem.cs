@@ -15,7 +15,7 @@ public partial class OrdenItem
 
     public decimal PrecioUnitario { get; set; }
 
-    public virtual Orden Orden { get; set; } = null!;
+    public virtual Ordene Orden { get; set; } = null!;
 
     public virtual ProductoVariacione Variacion { get; set; } = null!;
 }

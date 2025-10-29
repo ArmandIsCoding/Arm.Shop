@@ -10,12 +10,11 @@ public partial class Producto
 
     public DateTime FechaAlta { get; set; }
 
-    public virtual ICollection<ProductoVariacione> ProductoVariaciones { get; set; } = [];
+    public int? CategoriaId { get; set; }
 
-    public int CategoriaId { get; set; }
+    public virtual Categoria? Categoria { get; set; }
 
-    public Categoria Categoria { get; set; } = null!;
+    public virtual ICollection<ProductoImagene> ProductoImagenes { get; set; } = new List<ProductoImagene>();
 
-    // Nueva navegación
-    public virtual ICollection<ProductoImagen> Imagenes { get; set; } = new List<ProductoImagen>();
+    public virtual ICollection<ProductoVariacione> ProductoVariaciones { get; set; } = new List<ProductoVariacione>();
 }

@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 
 namespace Arm.Shop.Data.Models;
 
@@ -13,32 +15,31 @@ public partial class ArmShopDbContext : DbContext
     {
     }
 
-    public DbSet<ProductoImagen> ProductoImagenes { get; set; }
-
-    public virtual DbSet<EmpresaMetadata> EmpresaMetadata { get; set; }
-
     public virtual DbSet<Atributo> Atributos { get; set; }
 
     public virtual DbSet<AtributoValore> AtributoValores { get; set; }
 
     public virtual DbSet<CarritoItem> CarritoItems { get; set; }
 
+    public virtual DbSet<Categoria> Categorias { get; set; }
+
+    public virtual DbSet<EmpresaMetadatum> EmpresaMetadata { get; set; }
+
     public virtual DbSet<OrdenItem> OrdenItems { get; set; }
 
-    public virtual DbSet<Orden> Ordenes { get; set; }
+    public virtual DbSet<Ordene> Ordenes { get; set; }
 
     public virtual DbSet<Producto> Productos { get; set; }
+
+    public virtual DbSet<ProductoImagene> ProductoImagenes { get; set; }
 
     public virtual DbSet<ProductoVariacione> ProductoVariaciones { get; set; }
 
     public virtual DbSet<Usuario> Usuarios { get; set; }
 
-    public DbSet<Categoria> Categorias { get; set; }
-
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        // Intencionalmente vacío: la configuración se hace en Program.cs
-    }
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("Server=LOCALHOST\\SQLEXPRESS;Database=ArmShopDb;Trusted_Connection=True;TrustServerCertificate=True;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -80,6 +81,37 @@ public partial class ArmShopDbContext : DbContext
                 .HasConstraintName("FK__CarritoIt__Varia__6A30C649");
         });
 
+        modelBuilder.Entity<Categoria>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Categori__3214EC078B5E1E03");
+
+            entity.Property(e => e.Descripcion).HasMaxLength(255);
+            entity.Property(e => e.ImagenNombreArchivo)
+                .HasMaxLength(255)
+                .HasDefaultValue("sample.jpg");
+            entity.Property(e => e.Nombre).HasMaxLength(100);
+
+            entity.HasOne(d => d.CategoriaPadre).WithMany(p => p.InverseCategoriaPadre)
+                .HasForeignKey(d => d.CategoriaPadreId)
+                .HasConstraintName("FK_Categorias_CategoriasPadre");
+        });
+
+        modelBuilder.Entity<EmpresaMetadatum>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__EmpresaM__3214EC0779A0104D");
+
+            entity.Property(e => e.Descripcion).HasMaxLength(500);
+            entity.Property(e => e.Direccion).HasMaxLength(300);
+            entity.Property(e => e.Email).HasMaxLength(150);
+            entity.Property(e => e.FacebookUrl).HasMaxLength(200);
+            entity.Property(e => e.InstagramUrl).HasMaxLength(200);
+            entity.Property(e => e.LinkedinUrl).HasMaxLength(200);
+            entity.Property(e => e.Nombre).HasMaxLength(200);
+            entity.Property(e => e.SitioWeb).HasMaxLength(150);
+            entity.Property(e => e.Telefono).HasMaxLength(50);
+            entity.Property(e => e.TwitterUrl).HasMaxLength(200);
+        });
+
         modelBuilder.Entity<OrdenItem>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__OrdenIte__3214EC079DEB7ED9");
@@ -97,7 +129,7 @@ public partial class ArmShopDbContext : DbContext
                 .HasConstraintName("FK__OrdenItem__Varia__656C112C");
         });
 
-        modelBuilder.Entity<Orden>(entity =>
+        modelBuilder.Entity<Ordene>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__Ordenes__3214EC07AEDDE1F6");
 
@@ -121,6 +153,22 @@ public partial class ArmShopDbContext : DbContext
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
             entity.Property(e => e.Nombre).HasMaxLength(150);
+
+            entity.HasOne(d => d.Categoria).WithMany(p => p.Productos)
+                .HasForeignKey(d => d.CategoriaId)
+                .HasConstraintName("FK_Productos_Categorias");
+        });
+
+        modelBuilder.Entity<ProductoImagene>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Producto__3214EC078B98D5CC");
+
+            entity.Property(e => e.NombreArchivo).HasMaxLength(200);
+
+            entity.HasOne(d => d.Producto).WithMany(p => p.ProductoImagenes)
+                .HasForeignKey(d => d.ProductoId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__ProductoI__Produ__17036CC0");
         });
 
         modelBuilder.Entity<ProductoVariacione>(entity =>
@@ -171,24 +219,6 @@ public partial class ArmShopDbContext : DbContext
             entity.Property(e => e.PasswordHash).HasMaxLength(200);
         });
 
-        // Configuraciones explícitas
-        modelBuilder.Entity<Producto>(entity =>
-        {
-            entity.HasOne(p => p.Categoria)
-                  .WithMany(c => c.Productos)
-                  .HasForeignKey(p => p.CategoriaId)
-                  .OnDelete(DeleteBehavior.Restrict);
-        });
-
-        modelBuilder.Entity<Categoria>(entity =>
-        {
-            entity.HasOne(c => c.CategoriaPadre)
-                  .WithMany(c => c.Subcategorias)
-                  .HasForeignKey(c => c.CategoriaPadreId)
-                  .OnDelete(DeleteBehavior.Restrict);
-        });
-
-        // Llamada al método parcial
         OnModelCreatingPartial(modelBuilder);
     }
 

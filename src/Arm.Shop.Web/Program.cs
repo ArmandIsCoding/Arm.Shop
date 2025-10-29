@@ -22,7 +22,7 @@ namespace Arm.Shop
             builder.Services.AddMemoryCache();
             builder.Services.AddScoped<IEmpresaService, EmpresaService>();
             builder.Services.AddScoped<IProductoService, ProductoService>();
-
+            builder.Services.AddScoped<ICategoriaService, CategoriaService>();
 
             // Agregar servicios de Blazor Server
             builder.Services

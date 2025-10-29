@@ -32,7 +32,7 @@ namespace Arm.Shop.Data.Services
             var productos = await context.Productos
                 .AsNoTracking()
                 .Include(p => p.ProductoVariaciones)
-                .Include(p => p.Imagenes)
+                .Include(p => p.ProductoImagenes)
                 .OrderByDescending(p => p.FechaAlta)
                 .Take(cantidad)
                 .Select(p => new ProductoDestacadoDto
@@ -45,7 +45,7 @@ namespace Arm.Shop.Data.Services
                               .Select(v => (decimal?)v.Precio)
                               .FirstOrDefault() ?? 0m,
                     // Aseguramos incluir el Id en la URL si guardás por carpeta de producto
-                    ImagenUrl = p.Imagenes
+                    ImagenUrl = p.ProductoImagenes
                         .Where(i => i.EsPrincipal)
                         .Select(i => $"{_rutaBasePublica}/{i.NombreArchivo}")
                         .FirstOrDefault() ?? $"{_rutaBasePublica}/sample.jpg",
