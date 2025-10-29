@@ -17,5 +17,7 @@
 
         // 🔗 Productos asociados
         public List<Producto> Productos { get; set; } = new();
+
+        public string? ImagenNombreArchivo { get; set; }
     }
 }

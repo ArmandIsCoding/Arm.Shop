@@ -1,28 +1,73 @@
 ﻿using Arm.Shop.Core.DTOs;
 using Arm.Shop.Core.Services;
 using Arm.Shop.Data.Models;
+
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace Arm.Shop.Data.Services
 {
+    public class ImagenesOptions
+    {
+        public string RutaBase { get; set; } = "wwwroot/imagenes/productos";
+    }
+
     public class ProductoService : IProductoService
     {
-        private readonly ArmShopDbContext _context;
+        private readonly IDbContextFactory<ArmShopDbContext> _dbFactory;
+        private readonly string _rutaBasePublica;
 
-        public ProductoService(ArmShopDbContext context)
+        public ProductoService(IDbContextFactory<ArmShopDbContext> dbFactory, IOptions<ImagenesOptions> options)
         {
-            _context = context;
+            _dbFactory = dbFactory;
+            // "wwwroot/imagenes/productos" -> "/imagenes/productos"
+            _rutaBasePublica = options.Value.RutaBase.Replace("wwwroot", "");
+        }
+
+        // Devuelve lista materializada para simplificar consumo
+        public async Task<List<ProductoDestacadoDto>> GetDestacadosAsync(int cantidad = 3)
+        {
+            await using var context = await _dbFactory.CreateDbContextAsync();
+
+            var productos = await context.Productos
+                .AsNoTracking()
+                .Include(p => p.ProductoVariaciones)
+                .Include(p => p.Imagenes)
+                .OrderByDescending(p => p.FechaAlta)
+                .Take(cantidad)
+                .Select(p => new ProductoDestacadoDto
+                {
+                    Id = p.Id,
+                    Nombre = p.Nombre,
+                    Descripcion = p.Descripcion ?? "",
+                    // Precio 0 si no hay variaciones
+                    Precio = p.ProductoVariaciones
+                              .Select(v => (decimal?)v.Precio)
+                              .FirstOrDefault() ?? 0m,
+                    // Aseguramos incluir el Id en la URL si guardás por carpeta de producto
+                    ImagenUrl = p.Imagenes
+                        .Where(i => i.EsPrincipal)
+                        .Select(i => $"{_rutaBasePublica}/{i.NombreArchivo}")
+                        .FirstOrDefault() ?? $"{_rutaBasePublica}/sample.jpg",
+                    Reviews = 0
+                })
+                .ToListAsync();
+
+            return productos;
         }
 
         public async Task<List<ProductoDto>> GetProductosAsync()
         {
-            var productos = await _context.Productos
+            await using var context = await _dbFactory.CreateDbContextAsync();
+
+            var productos = await context.Productos
+                .AsNoTracking()
                 .Include(p => p.ProductoVariaciones)
                 .Include(p => p.Categoria)
-                    .ThenInclude(c => c.CategoriaPadre) // para poder armar la ruta
+                    .ThenInclude(c => c.CategoriaPadre)
                 .ToListAsync();
 
-            return [.. productos.Select(p => new ProductoDto
+            return productos.Select(p => new ProductoDto
             {
                 Id = p.Id,
                 Nombre = p.Nombre,
@@ -30,18 +75,17 @@ namespace Arm.Shop.Data.Services
                 Precio = p.ProductoVariaciones.FirstOrDefault()?.Precio,
                 Stock = p.ProductoVariaciones.Sum(v => v.Stock),
                 CategoriaRuta = ConstruirRutaCategoria(p.Categoria),
-                Variaciones = [.. p.ProductoVariaciones.Select(v => new ProductoVariacionDto
+                Variaciones = p.ProductoVariaciones.Select(v => new ProductoVariacionDto
                 {
                     Id = v.Id,
                     Sku = v.Sku,
                     Precio = v.Precio,
                     Stock = v.Stock,
                     Descripcion = $"{v.Sku}"
-                })]
-            })];
+                }).ToList()
+            }).ToList();
         }
 
-        // 🔁 Helper para construir la ruta completa de categorías
         private string ConstruirRutaCategoria(Categoria? categoria)
         {
             if (categoria == null) return string.Empty;

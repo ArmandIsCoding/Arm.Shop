@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace Arm.Shop.Data.Models;
 
@@ -15,7 +13,10 @@ public partial class ArmShopDbContext : DbContext
     {
     }
 
+    public DbSet<ProductoImagen> ProductoImagenes { get; set; }
+
     public virtual DbSet<EmpresaMetadata> EmpresaMetadata { get; set; }
+
     public virtual DbSet<Atributo> Atributos { get; set; }
 
     public virtual DbSet<AtributoValore> AtributoValores { get; set; }
@@ -24,7 +25,7 @@ public partial class ArmShopDbContext : DbContext
 
     public virtual DbSet<OrdenItem> OrdenItems { get; set; }
 
-    public virtual DbSet<Ordene> Ordenes { get; set; }
+    public virtual DbSet<Orden> Ordenes { get; set; }
 
     public virtual DbSet<Producto> Productos { get; set; }
 
@@ -96,7 +97,7 @@ public partial class ArmShopDbContext : DbContext
                 .HasConstraintName("FK__OrdenItem__Varia__656C112C");
         });
 
-        modelBuilder.Entity<Ordene>(entity =>
+        modelBuilder.Entity<Orden>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__Ordenes__3214EC07AEDDE1F6");
 

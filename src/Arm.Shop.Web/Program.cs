@@ -2,6 +2,7 @@
 using Arm.Shop.Data.Models;
 using Arm.Shop.Data.Services;
 using Arm.Shop.Web.Components;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace Arm.Shop
@@ -13,13 +14,15 @@ namespace Arm.Shop
             var builder = WebApplication.CreateBuilder(args);
 
             // 🔗 Registrar DbContext con la cadena de conexión desde appsettings.json
-            builder.Services.AddDbContext<ArmShopDbContext>(options =>
+            builder.Services.AddDbContextFactory<ArmShopDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            builder.Services.Configure<ImagenesOptions>(builder.Configuration.GetSection("Imagenes"));
 
             builder.Services.AddMemoryCache();
             builder.Services.AddScoped<IEmpresaService, EmpresaService>();
-
             builder.Services.AddScoped<IProductoService, ProductoService>();
+
 
             // Agregar servicios de Blazor Server
             builder.Services
@@ -44,5 +47,10 @@ namespace Arm.Shop
 
             app.Run();
         }
+    }
+
+    public class ImagenesOptions
+    {
+        public string RutaBase { get; set; } = "wwwroot/images/productos";
     }
 }

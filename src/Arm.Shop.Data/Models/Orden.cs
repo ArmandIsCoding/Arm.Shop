@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Arm.Shop.Data.Models;
 
-public partial class Ordene
+public partial class Orden
 {
     public int Id { get; set; }
 
